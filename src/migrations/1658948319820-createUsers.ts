@@ -6,7 +6,7 @@ export class createUsers1658948319820 implements MigrationInterface {
         await queryRunner.query(`
         CREATE table "users" (
             "id" SERIAL NOT NULL, 
-            "email" character varying NOT NULL, 
+            "email" character varying NOT NULL UNIQUE, 
             "bio" character varying DEFAULT '', 
             "image" character varying DEFAULT '', 
             "password" character varying NOT NULL, 
