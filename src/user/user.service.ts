@@ -8,6 +8,7 @@ import { UserEntity } from "@app/user/user.entity";
 import { JWT_SECRET } from '@app/config';
 import { UserResponseInterface } from "@app/types/userResponse.interface";
 import { LoginUserDto } from "@app/user/dto/loginUser.dto";
+import { UpdateUserDto } from "@app/user/dto/updateUser.dto";
 @Injectable()
 export class UserService {
     constructor(
@@ -37,6 +38,12 @@ export class UserService {
         const newUser = new UserEntity();
         Object.assign(newUser, createUserDto)
         return await this.userRepository.save(newUser);
+    }
+
+    async updateUser(userId: number, updateUserDto: UpdateUserDto): Promise<UserEntity> {
+        const user = await this.getUserById(userId);
+        Object.assign(user, updateUserDto);
+        return this.userRepository.save(user);
     }
 
     buildUserResponse(user: UserEntity): UserResponseInterface {
