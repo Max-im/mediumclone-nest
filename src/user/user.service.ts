@@ -1,25 +1,27 @@
 import { InjectRepository } from "@nestjs/typeorm";
 import { sign } from 'jsonwebtoken';
+import { compare } from 'bcrypt';
 import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
 import { Repository } from "typeorm";
 import { CreateUserDto } from "@app/user/dto/createUser.dto";
 import { UserEntity } from "@app/user/user.entity";
 import { JWT_SECRET } from '@app/config';
 import { UserResponseInterface } from "@app/types/userResponse.interface";
+import { LoginUserDto } from "@app/user/dto/loginUser.dto";
 @Injectable()
 export class UserService {
     constructor(
         @InjectRepository(UserEntity)
         private readonly userRepository: Repository<UserEntity>
-      ) {}
+    ) { }
 
-      async getUserByEmail(email: string) {
-        return await this.userRepository.findOneBy({email});
-      }
+    async getUserByEmail(email: string) {
+        return await this.userRepository.findOneBy({ email });
+    }
 
-      async getUserByName(username: string) {
-        return await this.userRepository.findOneBy({username});
-      }
+    async getUserByName(username: string) {
+        return await this.userRepository.findOneBy({ username });
+    }
 
     async createUser(createUserDto: CreateUserDto): Promise<UserEntity> {
         const userByEmail = await this.getUserByEmail(createUserDto.email);
@@ -42,11 +44,25 @@ export class UserService {
         }
     }
 
-    generateJwt(user: UserEntity): string {
+    private generateJwt(user: UserEntity): string {
         return sign({
             id: user.id,
             email: user.email,
             username: user.username
         }, JWT_SECRET)
+    }
+
+    async login(loginUserDto: LoginUserDto): Promise<UserEntity> {
+        const user = await this.getUserByEmail(loginUserDto.email);
+        if (!user) {
+            throw new HttpException('Email or password are incorrect', HttpStatus.UNPROCESSABLE_ENTITY);
+        }
+
+        const isCorrectPassword = await compare(loginUserDto.password, user.password);
+        if (!isCorrectPassword) {
+            throw new HttpException('Email or password are incorrect', HttpStatus.UNPROCESSABLE_ENTITY);
+        }
+        delete user.password;
+        return user;
     }
 }

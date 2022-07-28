@@ -5,6 +5,7 @@
 - nest
 - node
 - typeorm
+- postgress
 - typescript
 
 ## users
