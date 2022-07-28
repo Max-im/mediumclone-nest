@@ -15,6 +15,10 @@ export class UserService {
         private readonly userRepository: Repository<UserEntity>
     ) { }
 
+    async getUserById(id: number) {
+        return await this.userRepository.findOneBy({id});
+    }
+
     async getUserByEmail(email: string) {
         return await this.userRepository.findOneBy({ email });
     }
