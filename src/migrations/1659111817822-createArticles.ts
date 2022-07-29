@@ -15,7 +15,8 @@ export class createArticles1659111817822 implements MigrationInterface {
             "tagList" text NOT NULL, 
             "favoriteCount" integer DEFAULT '0', 
             PRIMARY KEY ("id")
-        );`);
+        );`
+        );
     };
 
     public async down(queryRunner: QueryRunner): Promise<void> {
