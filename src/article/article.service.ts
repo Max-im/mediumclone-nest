@@ -2,6 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { ArticleEntity } from '@app/article/article.entity';
+import { CreateArticleDto } from './dto/createArticle.dto';
+import { UserEntity } from '@app/user/user.entity';
 
 @Injectable()
 export class ArticleService {
@@ -10,7 +12,18 @@ export class ArticleService {
     private readonly articleRepository: Repository<ArticleEntity>
   ) {}
 
-    async createArticle() {
-      return 'lllll';
+    async createArticle(user: UserEntity, createArticleDto: CreateArticleDto): Promise<ArticleEntity> {
+      const article = new ArticleEntity();
+      Object.assign(article, createArticleDto);
+      
+      if (!article.tagList) {
+        article.tagList = [];
+      }
+
+      article.slug = 'test'
+      
+      article.author = user;
+
+      return await this.articleRepository.save(article);
     }
 }
