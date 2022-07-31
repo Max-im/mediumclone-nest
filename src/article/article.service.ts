@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import slugify from 'slugify';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -27,6 +27,16 @@ export class ArticleService {
       article.author = user;
 
       return await this.articleRepository.save(article);
+    }
+
+    async getArticleBySlug(slug: string): Promise<ArticleEntity> {
+      const article = await this.articleRepository.findOneBy({slug});
+
+      if (!article) {
+        throw new HttpException('Article not found', HttpStatus.NOT_FOUND);
+      }
+
+      return article;
     }
 
     private generateSlug(title: string): string {
