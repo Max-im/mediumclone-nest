@@ -23,6 +23,7 @@
 
 ## articles
 
-| method | url       | body                                                                               | description    |
-| ------ | --------- | ---------------------------------------------------------------------------------- | -------------- |
-| POST\* | /articles | {articles: {title: string, description: string, body: string, tagList?: string[]}} | create article |
+| method | url             | body                                                                               | description         |
+| ------ | --------------- | ---------------------------------------------------------------------------------- | ------------------- |
+| POST\* | /articles       | {articles: {title: string, description: string, body: string, tagList?: string[]}} | create article      |
+| GET    | /articles/:slug |                                                                                    | get article by slug |
