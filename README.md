@@ -20,3 +20,9 @@
 \* requires Authorisation Header 'Token <token>'
 
 ## tags
+
+## articles
+
+| method | url       | body                                                                               | description    |
+| ------ | --------- | ---------------------------------------------------------------------------------- | -------------- |
+| POST\* | /articles | {articles: {title: string, description: string, body: string, tagList?: string[]}} | create article |
