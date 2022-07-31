@@ -1,7 +1,7 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import slugify from 'slugify';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { DeleteResult, Repository } from 'typeorm';
 import { ArticleEntity } from '@app/article/article.entity';
 import { CreateArticleDto } from './dto/createArticle.dto';
 import { UserEntity } from '@app/user/user.entity';
@@ -37,6 +37,16 @@ export class ArticleService {
       }
 
       return article;
+    }
+
+    async deleteBySlug(slug: string, userId: number): Promise<DeleteResult> {
+      const article = await this.getArticleBySlug(slug);
+
+      if (article.author.id !== userId) {
+        throw new HttpException('You have no permission', HttpStatus.FORBIDDEN);
+      }
+
+      return await this.articleRepository.delete(article.id);
     }
 
     private generateSlug(title: string): string {
