@@ -6,6 +6,7 @@ import { ArticleEntity } from '@app/article/article.entity';
 import { CreateArticleDto } from './dto/createArticle.dto';
 import { UserEntity } from '@app/user/user.entity';
 import { ArticleResponseInterface } from './type/articleResponse.interface';
+import { UpdateArticleDto } from './dto/updateArticle.dto';
 
 @Injectable()
 export class ArticleService {
@@ -37,6 +38,23 @@ export class ArticleService {
       }
 
       return article;
+    }
+
+    async updateArticle(slug: string, updateArticleDto: UpdateArticleDto, userId: number) {
+      const article = await this.getArticleBySlug(slug);
+
+      if (article.author.id !== userId) {
+        throw new HttpException('You have no permission', HttpStatus.FORBIDDEN);
+      }
+
+      Object.assign(article, updateArticleDto);
+
+      console.log({updateArticleDto})
+      if (updateArticleDto.title) {
+        article.slug = this.generateSlug(updateArticleDto.title);
+      }
+
+      return await this.articleRepository.save(article);
     }
 
     async deleteBySlug(slug: string, userId: number): Promise<DeleteResult> {
