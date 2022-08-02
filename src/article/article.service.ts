@@ -1,19 +1,44 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import slugify from 'slugify';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DeleteResult, Repository } from 'typeorm';
+import { DeleteResult, getRepository, Repository } from 'typeorm';
 import { ArticleEntity } from '@app/article/article.entity';
 import { CreateArticleDto } from './dto/createArticle.dto';
 import { UserEntity } from '@app/user/user.entity';
 import { ArticleResponseInterface } from './type/articleResponse.interface';
 import { UpdateArticleDto } from './dto/updateArticle.dto';
+import { ArticlesResponseInterface } from './type/articlesResponse.interface';
 
 @Injectable()
 export class ArticleService {
   constructor(
     @InjectRepository(ArticleEntity)
-    private readonly articleRepository: Repository<ArticleEntity>
+    private readonly articleRepository: Repository<ArticleEntity>,
+    @InjectRepository(UserEntity)
+    private readonly userRepository: Repository<UserEntity>
   ) {}
+
+    async getAll(userId: number | undefined, query: any): Promise<ArticlesResponseInterface> {
+      const queryBuilder = getRepository(ArticleEntity)
+        .createQueryBuilder('articles')
+        .leftJoinAndSelect('articles.author', 'author');
+        
+        if (query.tag) queryBuilder.andWhere('articles.tagList LIKE :tag', {tag: `%${query.tag}`});
+
+        if (query.author) {
+          const author = await this.userRepository.findOneBy({username: query.author})
+          queryBuilder.andWhere('articles.authorId = :id', {id: author.id});
+        }
+
+        const articlesCount = await queryBuilder.getCount();
+
+        if (query.limit) queryBuilder.limit = query.limit;
+        if (query.offset) queryBuilder.offset = query.offset;
+
+        const articles = await queryBuilder.getMany();
+
+        return {articles, articlesCount}
+    }
 
     async createArticle(user: UserEntity, createArticleDto: CreateArticleDto): Promise<ArticleEntity> {
       const article = new ArticleEntity();
