@@ -23,10 +23,12 @@
 
 ## articles
 
-| method   | url             | body                                                                                  | description            |
-| -------- | --------------- | ------------------------------------------------------------------------------------- | ---------------------- |
-| GET      | /articles       |                                                                                       | get articles           |
-| POST\*   | /articles       | {articles: {title: string, description: string, body: string, tagList?: string[]}}    | create article         |
-| GET      | /articles/:slug |                                                                                       | get article by slug    |
-| PUT\*    | /articles/:slug | {articles: {title?: string, description?: string, body?: string, tagList?: string[]}} | update article         |
-| DELETE\* | /articles/:slug |                                                                                       | delete article by slug |
+| method   | url                        | body                                                                                  | description            |
+| -------- | -------------------------- | ------------------------------------------------------------------------------------- | ---------------------- |
+| GET      | /articles                  |                                                                                       | get articles           |
+| POST\*   | /articles                  | {articles: {title: string, description: string, body: string, tagList?: string[]}}    | create article         |
+| GET      | /articles/:slug            |                                                                                       | get article by slug    |
+| PUT\*    | /articles/:slug            | {articles: {title?: string, description?: string, body?: string, tagList?: string[]}} | update article         |
+| DELETE\* | /articles/:slug            |                                                                                       | delete article by slug |
+| POST\*   | /articles/:slug/favorite   |                                                                                       | like article           |
+| DELETE\* | /articles/:slug/unfavorite |                                                                                       | unlike article         |
