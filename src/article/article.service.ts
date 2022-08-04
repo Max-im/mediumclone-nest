@@ -118,4 +118,23 @@ export class ArticleService {
 
     return article;
   }
+
+  async deleteFromFavorite(slug: string, userId: number): Promise<ArticleEntity> {
+    const article = await this.getArticleBySlug(slug);
+    const user = await this.userRepository.findOne({
+      where: { id: userId },
+      relations: { favorites: true }
+    });
+
+    const articleIndex = user.favorites.findIndex(item => item.id === article.id);
+
+    if (articleIndex >= 0) {
+      user.favorites.splice(articleIndex, 1);
+      article.favoriteCount--;
+      await this.userRepository.save(user);
+      await this.articleRepository.save(article);
+    }
+
+    return article;
+  }
 }
